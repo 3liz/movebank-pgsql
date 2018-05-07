@@ -52,13 +52,13 @@ try:
         # Insert data into table
         cur.executemany(
             """
-            INSERT INTO movebank.ind_points (
+            INSERT INTO movebank.gps_points (
                 ind_name, event_timestamp, geom
             )
             VALUES (
                 %(ind_name)s,
                 to_timestamp(( %(timestamp)s::real / 1000)),
-                ST_MakePoint( %(longitude)s, %(latitude)s )::geometry(POINT, 4326)
+                ST_SetSRID(ST_MakePoint( %(longitude)s, %(latitude)s ), 4326)
             )
             """,
             inds
