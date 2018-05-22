@@ -21,33 +21,39 @@ wget "https://www.movebank.org/movebank/service/public/json?study_id=10857031&ma
 
 ## Create the PostgreSQL database
 
-On peut le faire à la main, ou via ligne de commande. La base s'appelle dans l'exemple `movebank`. Dans la suite, on considère que l'utilisateur PostgreSQL qui lance les requêtes est un utilisateur avec des droits élevés (superadmin).
-Il faut activer l'extension PostGIS sur la base de données.
+We need a PostgreSQL database to store the Movebank data. We assume here that you have a PostgreSQL server up and running, and that you can create a database. In the following example, we use `postgres` user, but you can obviously create a dedicated user with lower rights. 
+This example has been tested under Debian and Ubuntu. Please adapt it for your distribution.
 
-Par exemple, en ligne de commande sur un serveur Debian (commandes à lancer par exemple en tant que root)
+You could also use a graphical user interface such as PgAdmin to create the database and run the SQL script.
 
-```
+```sh
+# become postgres
 su -u postgres
+
+# create the database
 createdb movebank
+
+# create postgis extension
 psql -d movebank -c 'CREATE EXTENSION postgis'
+
+# create a movebank schema
 psql -d movebank -c 'CREATE SCHEMA IF NOT EXISTS movebank';
 ```
 
-On doit ensuite lancer le fichier SQL `movebank_structure.sql` pour créer les tables, les fonctions qui permettent d'exploiter les données brutes.
+Your database is ready. You can now use the SQL file `movebank_structure.sql` to create the needed structure, with your graphical tool (pgAdmin) or via command line (please adapt the file path):
 
-Vous pouvez l'ouvrir et le lancer à la main (via pgAdmin par exemple), ou en ligne de commande (il faut alors adapter le chemin du fichier)
-
-```
+```sh
+su -u postgres
 psql -d movebank -f movebank_structure.sql
 ```
 
-# Importer les données dans la base
+# Import data in the database
 
-On utilise le script Python import_movebank.py. Vu qu'il n'est pas encore paramétrable, il faut l'ouvrir avec un éditeur de texte et modifier certaines variables.
+You can now use the Python (Python 2) script `import_movebank.py` to import the previosly downloaded data. This is a quick-and-dirty script, with no parameter nor fancy options. Please adapt it or improve it if needed. Pull request accepted ;)
 
-Puis le lancer, en se plaçant au préalable dans le répertoire qui contient le fichier `movebank.json`
+You can run it from command line. Make sure the file `movebank.json` is in the same folder as the Python script.
 
 ```
-cd /le/bon/repertoire
+cd /your/directory/
 python import_movebank.py
 ```
